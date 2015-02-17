@@ -3,6 +3,8 @@
 POSTGRES_URLS=${PGBOUNCER_URLS:-DATABASE_URL}
 POOL_MODE=${PGBOUNCER_POOL_MODE:-transaction}
 SERVER_RESET_QUERY=${PGBOUNCER_SERVER_RESET_QUERY}
+STATS_DB_USER=${PGBOUNCER_STATS_USERNAME:-$(date +%s | md5 | base64 | head -c 32)}
+STATS_DB_PASS=${PGBOUNCER_STATS_PASSWORD:-$(date +%s | md5 | base64 | head -c 32)}
 n=1
 
 # if the SERVER_RESET_QUERY and pool mode is session, pgbouncer recommends DISCARD ALL be the default
@@ -52,8 +54,13 @@ log_connections = ${PGBOUNCER_LOG_CONNECTIONS:-1}
 log_disconnections = ${PGBOUNCER_LOG_DISCONNECTIONS:-1}
 log_pooler_errors = ${PGBOUNCER_LOG_POOLER_ERRORS:-1}
 stats_period = ${PGBOUNCER_STATS_PERIOD:-60}
-stats_users = *
+stats_users = ${STATS_DB_USER}
 [databases]
+EOFEOF
+
+STATS_MD5_PASS="md5"`echo -n ${STATS_DB_PASS}${STATS_DB_USER} | md5sum | awk '{print $1}'`
+cat >> /app/vendor/pgbouncer/users.txt << EOFEOF
+"$STATS_DB_USER" "$STATS_MD5_PASS"
 EOFEOF
 
 for POSTGRES_URL in $POSTGRES_URLS
@@ -101,3 +108,5 @@ done
 
 chmod go-rwx /app/vendor/pgbouncer/*
 chmod go-rwx /app/vendor/stunnel/*
+
+export PGBOUNCER_STATS_DATABASE_URL=postgres://$STATS_DB_USER:$STATS_DB_PASS@127.0.0.1:6000/pgbouncer
