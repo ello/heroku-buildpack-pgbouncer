@@ -3,8 +3,8 @@
 POSTGRES_URLS=${PGBOUNCER_URLS:-DATABASE_URL}
 POOL_MODE=${PGBOUNCER_POOL_MODE:-transaction}
 SERVER_RESET_QUERY=${PGBOUNCER_SERVER_RESET_QUERY}
-STATS_DB_USER=${PGBOUNCER_STATS_USERNAME:-$(date +%s | md5 | base64 | head -c 32)}
-STATS_DB_PASS=${PGBOUNCER_STATS_PASSWORD:-$(date +%s | md5 | base64 | head -c 32)}
+STATS_DB_USER=${PGBOUNCER_STATS_USERNAME:-`date +%s | md5 | base64 | head -c 32`}
+STATS_DB_PASS=${PGBOUNCER_STATS_PASSWORD:-`date +%s | md5 | base64 | head -c 32`}
 n=1
 
 # if the SERVER_RESET_QUERY and pool mode is session, pgbouncer recommends DISCARD ALL be the default
