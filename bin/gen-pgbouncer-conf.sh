@@ -109,4 +109,4 @@ done
 chmod go-rwx /app/vendor/pgbouncer/*
 chmod go-rwx /app/vendor/stunnel/*
 
-export PGBOUNCER_STATS_DATABASE_URL=postgres://$STATS_DB_USER:$STATS_DB_PASS@127.0.0.1:6000/pgbouncer
+export PGBOUNCER_STATS_DATABASE_URL=postgres://$STATS_DB_USER:$STATS_DB_PASS@localhost:6000/pgbouncer
